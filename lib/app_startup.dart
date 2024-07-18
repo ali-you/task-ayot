@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:task_ayot/ui/screens/home_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_ayot/logic/main_screen_cubit.dart';
+import 'package:task_ayot/ui/screens/main_screen.dart';
 
 class AppStartup extends StatelessWidget {
   const AppStartup({super.key});
@@ -13,7 +15,10 @@ class AppStartup extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: BlocProvider(
+        create: (context) => MainScreenCubit(),
+        child: const MainScreen(),
+      ),
     );
   }
 }
