@@ -11,4 +11,10 @@ final class PermissionState extends MainScreenState {
   PermissionState(this.status);
 }
 
+final class CoordinateListState extends MainScreenState {
+  final List<CoordinateModel> coordinateList;
+
+  CoordinateListState(this.coordinateList);
+}
+
 

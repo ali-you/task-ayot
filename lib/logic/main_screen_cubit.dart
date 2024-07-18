@@ -4,6 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:task_ayot/data/enums/permission_status.dart';
 import 'package:task_ayot/data/models/coordinate_model.dart';
+import 'package:task_ayot/services/database/coordinate_db.dart';
+import 'package:task_ayot/services/database/database_service.dart';
 
 import '../services/location_service.dart';
 
@@ -11,11 +13,17 @@ part 'main_screen_state.dart';
 
 class MainScreenCubit extends Cubit<MainScreenState> {
   MainScreenCubit() : super(MainScreenInitial()) {
-    requestPermission();
+    _init();
   }
 
-  late final LocationService _locationService =  LocationService();
-  StreamSubscription<CoordinateModel>? _subscription;
+  Future<void> _init() async {
+    await requestPermission();
+    getCoordinateList();
+  }
+
+  final LocationService _locationService = LocationService();
+  final CoordinateDB _coordinateDB = CoordinateDB();
+  late final List<CoordinateModel> _coordinateList;
 
   Future<void> requestPermission() async {
     PermissionStatus status = await _locationService.permission();
@@ -27,6 +35,17 @@ class MainScreenCubit extends Cubit<MainScreenState> {
 
   Stream<CoordinateModel?> get periodicStream =>
       _locationService.periodicStream;
+
+  void getCoordinateList() {
+    _coordinateList = _coordinateDB.getCoordinateList();
+    emit(CoordinateListState(_coordinateList));
+  }
+
+  Future<void> addCoordinate(CoordinateModel coordinate) async {
+    await _coordinateDB.addCoordinate(coordinate);
+    _coordinateList.add(coordinate);
+    emit(CoordinateListState(_coordinateList));
+  }
 
   @override
   Future<void> close() async {

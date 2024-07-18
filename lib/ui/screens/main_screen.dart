@@ -75,9 +75,9 @@ class _MainScreenState extends State<MainScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-
-
-
+          if (currentCoordinate != null) {
+            context.read<MainScreenCubit>().addCoordinate(currentCoordinate!);
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -85,7 +85,7 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
                 color: Colors.grey, borderRadius: BorderRadius.circular(16)),
             child: Center(
@@ -100,13 +100,40 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
           ),
-          // Container(
-          //   padding: const EdgeInsets.all(16),
-          //   margin: const EdgeInsets.all(16),
-          //   decoration: BoxDecoration(
-          //       color: Colors.grey, borderRadius: BorderRadius.circular(16)),
-          //   child: ListView.builder(itemBuilder: itemBuilder),
-          // )
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.circular(16)),
+              child: BlocBuilder<MainScreenCubit, MainScreenState>(
+                buildWhen: (previous, current) =>
+                    current is CoordinateListState,
+                builder: (context, state) {
+                  if (state is CoordinateListState) {
+                    if (state.coordinateList.isEmpty) {
+                      return const Center(
+                          child: Text("No item ! add something!",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)));
+                    }
+                    return ListView.separated(
+                      itemCount: state.coordinateList.length,
+                      itemBuilder: (context, index) {
+                        CoordinateModel temp = state.coordinateList[index];
+                        return CoordinateWidget(coordinateModel: temp);
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider(
+                            height: 0, indent: 16, endIndent: 16);
+                      },
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          )
         ],
       ),
     );

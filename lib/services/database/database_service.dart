@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:task_ayot/data/models/coordinate_model.dart';
 
-class DbInitializer {
+class DatabaseService {
   Future<void> initHiveFlutter() async {
     await Hive.initFlutter();
   }
@@ -18,5 +18,4 @@ class DbInitializer {
   Future<void> _coordinate() async {
     await Hive.openBox<CoordinateModel>('CoordinateDB');
   }
-
 }

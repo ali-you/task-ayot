@@ -26,7 +26,9 @@ class LocationService {
           (position) => CoordinateModel(
               latitude: position.latitude, longitude: position.longitude));
 
-  _initTimer() {
+  _initTimer() async {
+    var loc = await currentLocation();
+    _controller.add(loc);
     _timer = Timer.periodic(
       const Duration(seconds: 5),
       (timer) async {
