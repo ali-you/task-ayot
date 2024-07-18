@@ -13,9 +13,12 @@ class LocationService {
   final LocationSettings _locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.high, distanceFilter: 100);
 
-  Future<CoordinateModel> currentLocation() async {
-    Position position = await _locatorPlatform.getCurrentPosition();
+  Future<CoordinateModel?> currentLocation() async {
+    if (await permission(false) != PermissionStatus.granted) {
+      return null;
+    }
 
+    Position position = await _locatorPlatform.getCurrentPosition();
     return CoordinateModel(
         latitude: position.latitude, longitude: position.longitude);
   }
@@ -45,7 +48,7 @@ class LocationService {
     return _controller.stream;
   }
 
-  Future<PermissionStatus> permission() async {
+  Future<PermissionStatus> permission([bool withRequest = true]) async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -56,14 +59,14 @@ class LocationService {
 
     permission = await _locatorPlatform.checkPermission();
     if (permission == LocationPermission.denied) {
-      permission = await _locatorPlatform.requestPermission();
+      if(withRequest) permission = await _locatorPlatform.requestPermission();
       if (permission == LocationPermission.denied) {
         return PermissionStatus.denied;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      _openAppSettings();
+      if (withRequest) _openAppSettings();
       return PermissionStatus.permanentlyDenied;
     }
     return PermissionStatus.granted;

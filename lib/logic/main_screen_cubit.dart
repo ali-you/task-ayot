@@ -5,14 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:task_ayot/data/enums/permission_status.dart';
 import 'package:task_ayot/data/models/coordinate_model.dart';
 import 'package:task_ayot/services/database/coordinate_db.dart';
-import 'package:task_ayot/services/database/database_service.dart';
 
 import '../services/location_service.dart';
 
 part 'main_screen_state.dart';
 
 class MainScreenCubit extends Cubit<MainScreenState> {
-  MainScreenCubit() : super(MainScreenInitial()) {
+  final LocationService locationService;
+  final CoordinateDB coordinateDB;
+  late final List<CoordinateModel> _coordinateList;
+
+  MainScreenCubit({required this.locationService, required this.coordinateDB})
+      : super(MainScreenInitial()) {
     _init();
   }
 
@@ -21,28 +25,23 @@ class MainScreenCubit extends Cubit<MainScreenState> {
     getCoordinateList();
   }
 
-  final LocationService _locationService = LocationService();
-  final CoordinateDB _coordinateDB = CoordinateDB();
-  late final List<CoordinateModel> _coordinateList;
-
   Future<void> requestPermission() async {
-    PermissionStatus status = await _locationService.permission();
-    // if (status == PermissionStatus.granted) periodicStream;
+    PermissionStatus status = await locationService.permission();
     emit(PermissionState(status));
   }
 
-  Stream<CoordinateModel> get locationStream => _locationService.locationStream;
+  Stream<CoordinateModel> get locationStream => locationService.locationStream;
 
   Stream<CoordinateModel?> get periodicStream =>
-      _locationService.periodicStream;
+      locationService.periodicStream;
 
   void getCoordinateList() {
-    _coordinateList = _coordinateDB.getCoordinateList();
+    _coordinateList = coordinateDB.getCoordinateList();
     emit(CoordinateListState(_coordinateList));
   }
 
   Future<void> addCoordinate(CoordinateModel coordinate) async {
-    await _coordinateDB.addCoordinate(coordinate);
+    await coordinateDB.addCoordinate(coordinate);
     _coordinateList.add(coordinate);
     emit(CoordinateListState(_coordinateList));
   }
@@ -50,6 +49,6 @@ class MainScreenCubit extends Cubit<MainScreenState> {
   @override
   Future<void> close() async {
     super.close();
-    _locationService.dispose();
+    locationService.dispose();
   }
 }

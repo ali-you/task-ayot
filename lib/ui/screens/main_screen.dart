@@ -25,6 +25,8 @@ class _MainScreenState extends State<MainScreen> {
             "You permanently denied location permission! change this from settings");
       case PermissionStatus.unableToDetermine:
         return const Text("Turn on GPS!");
+      case PermissionStatus.granted:
+        return _currentLocation();
       default:
         return const Text("Somethings went wrong!");
     }
@@ -93,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
                 buildWhen: (previous, current) => current is PermissionState,
                 builder: (context, state) {
                   if (state is PermissionState) {
-                    return _currentLocation();
+                    return _locationWidgetSelector(state.status);
                   }
                   return const Text("Somethings went wrong!");
                 },

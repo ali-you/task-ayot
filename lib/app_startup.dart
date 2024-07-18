@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_ayot/logic/main_screen_cubit.dart';
+import 'package:task_ayot/services/database/coordinate_db.dart';
+import 'package:task_ayot/services/location_service.dart';
 import 'package:task_ayot/ui/screens/main_screen.dart';
 
 class AppStartup extends StatelessWidget {
@@ -16,7 +18,8 @@ class AppStartup extends StatelessWidget {
         useMaterial3: true,
       ),
       home: BlocProvider(
-        create: (context) => MainScreenCubit(),
+        create: (context) => MainScreenCubit(
+            coordinateDB: CoordinateDB(), locationService: LocationService()),
         child: const MainScreen(),
       ),
     );

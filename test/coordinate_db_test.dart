@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:task_ayot/data/models/coordinate_model.dart';
 import 'package:task_ayot/services/database/coordinate_db.dart';
 
-// Generate a MockBox class
 @GenerateMocks([Box])
 import 'coordinate_db_test.mocks.dart';
 
